@@ -3,6 +3,10 @@ loan_app_scheduled_perf_tests
 
 Every 4 hours, submits a fixed performance-test prompt to a Langflow agent
 via its REST API and logs the agent's summarized reply.
+
+Requires Airflow Variables:
+  - LANGFLOW_API_KEY: API key for the Langflow instance
+  - LANGFLOW_FLOW_ID: the flow/agent id to run
 """
 from __future__ import annotations
 
@@ -16,10 +20,7 @@ from airflow.sdk import Variable, dag, task
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-LANGFLOW_URL = (
-    "https://langflow.hpepcai2.demo.local/api/v1/run/"
-    "c0f8d739-ab9b-4f9d-8c95-5b9264ae95a0"
-)
+LANGFLOW_BASE_URL = "https://langflow.hpepcai2.demo.local/api/v1/run"
 PROMPT = (
     "Run ten performance tests that alternates between 10 VUs for 5 seconds, "
     "10 VUs for 10 seconds, 20 VUs for 5 seconds, and 10 VUs for 30 seconds. "
@@ -42,6 +43,8 @@ def loan_app_scheduled_perf_tests():
     @task(retries=2, retry_delay=timedelta(minutes=5))
     def run_langflow_perf_test() -> None:
         api_key = Variable.get("LANGFLOW_API_KEY")
+        flow_id = Variable.get("LANGFLOW_FLOW_ID")
+        langflow_url = f"{LANGFLOW_BASE_URL}/{flow_id}"
 
         payload = {
             "output_type": "chat",
@@ -56,7 +59,7 @@ def loan_app_scheduled_perf_tests():
 
         # verify=False: self-signed cert in this environment.
         response = requests.post(
-            LANGFLOW_URL,
+            langflow_url,
             json=payload,
             headers=headers,
             verify=False,

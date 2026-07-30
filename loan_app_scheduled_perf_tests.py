@@ -22,9 +22,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 LANGFLOW_BASE_URL = "https://langflow.hpepcai2.demo.local/api/v1/run"
 PROMPT = (
-    "Run four performance tests that alternates between 10 VUs for 5 seconds, "
-    "10 VUs for 10 seconds, 20 VUs for 5 seconds, and 10 VUs for 30 seconds. "
-    "Summarize the results"
+    "Run four performance tests: 10 VUs for 5 seconds, 15 VUs for 5 seconds, "
+    "10 VUs for 10 seconds, and 20 VUs for 5 seconds. Summarize the results"
 )
 
 logger = logging.getLogger(__name__)

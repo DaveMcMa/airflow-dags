@@ -1,7 +1,7 @@
 """
 loan_app_scheduled_perf_tests
 
-Every 4 hours, submits a fixed performance-test prompt to a Langflow agent
+Every hour, submits a fixed performance-test prompt to a Langflow agent
 via its REST API and logs the agent's summarized reply.
 
 Requires Airflow Variables:
@@ -31,13 +31,13 @@ logger = logging.getLogger(__name__)
 
 @dag(
     dag_id="loan_app_scheduled_perf_tests",
-    schedule="0 */4 * * *",
+    schedule="0 * * * *",
     start_date=datetime(2026, 1, 1),
     catchup=False,
     tags=["langflow", "performance-testing"],
 )
 def loan_app_scheduled_perf_tests():
-    """Every 4 hours, ask a Langflow agent to run the loan-app perf test suite and summarize the results."""
+    """Every hour, ask a Langflow agent to run the loan-app perf test suite and summarize the results."""
 
     @task(retries=2, retry_delay=timedelta(minutes=5))
     def run_langflow_perf_test() -> None:
